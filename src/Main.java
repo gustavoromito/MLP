@@ -62,12 +62,12 @@ public class Main {
         int[] camadaSaida = calcularSomatorio(camadaEscondida, pcamadaEscondida);
     }
 
-    public static int[] calcularErro(int[] camadaEscondida, int valorEsperado, int yink) {
+    public static int[] calcularErro(int[] camadaEscondida, int valorEsperado, int[] camadaSaida) {
         int[] erro = new int[camadaSaida.length-1];
         for(int k=0; k<camdaSaida.length-1; k++){
             // Precisamos fazer a ativação separado do método calcularSomatorio, senão não conseguiremos
             // fazer essa expresso que eu escrevi aqui
-            erro[k]=(valorEsperado-funcaoAtivacao(camadaEscondida[k]))*derivadaFuncaoExponencial(somatorio);
+            erro[k]=((valorEsperado-camadaEscondida[k])*(camadaSaida[k]*(1-camadaSaida[k])));
         }
         return erro;
     }
