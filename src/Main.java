@@ -65,8 +65,6 @@ public class Main {
     public static int[] calcularErro(int[] camadaEscondida, int valorEsperado, int[] camadaSaida) {
         int[] erro = new int[camadaSaida.length-1];
         for(int k=0; k<camdaSaida.length-1; k++){
-            // Precisamos fazer a ativação separado do método calcularSomatorio, senão não conseguiremos
-            // fazer essa expresso que eu escrevi aqui
             erro[k]=((valorEsperado-camadaEscondida[k])*(camadaSaida[k]*(1-camadaSaida[k])));
         }
         return erro;
@@ -111,30 +109,30 @@ public class Main {
             for(int j = 0; j < camadaPesos[i].length; j++) {
                 somatoria += camadaX[j] * camadaPesos[i][j];
             }
-            novaCamada[aux] = funcaoAtivacao(somatoria);
+            novaCamada[aux] = funcaoExponencial(somatoria);
             aux++;
         }
 
         return novaCamada;
     }
 
-    /* returns -1 or 1 */
+    /*
     public static int funcaoAtivacao(int sum) {
         int LIMIAR = 10;
         double fx = funcaoExponencial(sum);
 
         return (fx >= LIMIAR) ? 1 : -1;
-    }
+    }*/
 
     public static double funcaoExponencial(int sum) {
         return 1 / (1 + Math.exp(-sum));
     }
 
-    public static double derivadaFuncaoExponencial(int sum) {
+    /*public static double derivadaFuncaoExponencial(int sum) {
         double fx = funcaoAtivacao(sum);
 
         return fx * (1 - fx);
-    }
+    }*/
 
     public static float[] hogDescriptor() {
 //        carrega uma img, o parametro é o caminho para a imagem
