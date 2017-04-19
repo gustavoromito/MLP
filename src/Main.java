@@ -69,6 +69,24 @@ public class Main {
         }
         return erro;
     }
+    
+    public static int[] calcularErroFinal(int[] erro, int[] camadaEscondida, int[][] pesosCamadaEntrada) {
+        int[] aux = new int[3];
+        int[] erro2 = new int[3];
+        // Parte da somatória para achar os valores de entrada da camada escondida
+        for(int i = 0; i < camadaPesos.length; i++) {
+            int somatoria = 0;
+            for(int j = 0; j < camadaPesos[i].length; j++) {
+                somatoria += erro[j] * pesosCamadaEntrada[i][j];
+            }
+            aux[i] = somatoria;
+        }
+        for(int k=0; k<erro2.length; k++){
+            erro2[k] = aux[k]*(camadaEscondida[k]*(1-camadaEscondida[k]));
+        }
+
+        return erro2;
+    }
 
 //    public static double[][] inicializacaoPesos(int[] fromCamada, int[] toCamada, int fromLayer, int toLayer) {
 //        int numberOfNeuronsInputLayer = fromCamada.length;
