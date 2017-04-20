@@ -70,14 +70,14 @@ public class Main {
         return erro;
     }
     
-    public static int[] calcularErroFinal(int[] erro, int[] camadaEscondida, int[][] pesosCamadaEntrada) {
+    public static int[] calcularErroFinal(int[] erro, int[] camadaEscondida, int[][] pcamadaSaida) {
         int[] aux = new int[3];
         int[] erro2 = new int[3];
         // Parte da somatória para achar os valores de entrada da camada escondida
-        for(int i = 0; i < camadaPesos.length; i++) {
+        for(int i = 0; i < pcamadaSaida.length; i++) {
             int somatoria = 0;
-            for(int j = 0; j < camadaPesos[i].length; j++) {
-                somatoria += erro[j] * pesosCamadaEntrada[i][j];
+            for(int j = 0; j < pcamadaSaida[i].length; j++) {
+                somatoria += erro[j] * pcamadaSaida[i][j];
             }
             aux[i] = somatoria;
         }
@@ -86,6 +86,36 @@ public class Main {
         }
 
         return erro2;
+    }
+    
+    public static int[] deltaPesos(int ta, int[] erro, int[] camadaX){
+        int[][] deltapesos = new int[3][3];
+        for(int i=0; i<camadaX.length-1; i++){
+            for(int j=0; j<camadaX.length-1; j++){
+                deltapesos[i][j]=ta*erro[j]*camadaX[i];
+            }
+        }
+        return deltapesos;
+    }
+    
+     public static int[] deltaPesosBias(int ta, int[] erro){
+        int[] dpbias = new int[3];
+        for(int i=0; i<erro.length; i++){
+            dpbais[i]=ta*erro[j];
+        }
+        return dpbias;
+    }
+    
+    public static void atualizaPesos(int[][] pcamadaX, int[][] deltapeso, int[] dpbias){
+        for(int j=1; j<pcamadaX.length; j++){
+            for(k=0; k<pcamadaX[j].length; k++){
+                pcamadaX[j][k] = pcamadaX[j][k] + deltapeso[j][k];
+            }
+        }
+        
+        for(int i=0; i<dpbias.length; i++){
+            pcamadaX[i][i]=pcamadaX[i][i]+dpbias[i];
+        }
     }
 
 //    public static double[][] inicializacaoPesos(int[] fromCamada, int[] toCamada, int fromLayer, int toLayer) {
