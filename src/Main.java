@@ -63,10 +63,10 @@ public class Main {
         double[] camadaSaida = calcularSomatorio(camadaEscondida, pcamadaEscondida);
     }
 
-    public static int[] calcularErro(int[] camadaEscondida, int valorEsperado, int[] camadaSaida) {
+    public static int[] calcularErro(int valorEsperado, int[] camadaSaida) {
         int[] erro = new int[camadaSaida.length - 1];
         for(int k = 0; k < camadaSaida.length - 1; k++){
-            erro[k] = ((valorEsperado - camadaEscondida[k]) * (camadaSaida[k] * (1 - camadaSaida[k])));
+            erro[k] = ((valorEsperado - camadaSaida[k]) * (camadaSaida[k] * (1 - camadaSaida[k])));
         }
         return erro;
     }
@@ -89,8 +89,11 @@ public class Main {
         return erro2;
     }
     
+    // CAMADAX DEVE SER OU A CAMADA ESCONDIDA OU A CAMADA DE ENTRADA,
+    // DEPENDE DE QUAL DELTA ESTAMOS QUERENDO, OU EH O DELTA W OU
+    // O DELTA V
     public static double[][] deltaPesos(double[] erro, double[] camadaX){
-        double[][] deltapesos = new double[3][3];
+        double[][] deltapesos = new double[camadaX.length][camadaX.length];
         for(int i = 0; i < camadaX.length - 1; i++){
             for(int j = 0; j < camadaX.length - 1; j++){
                 deltapesos[i][j] = TAXA_APRENDIZADO * erro[j] * camadaX[i];
@@ -99,9 +102,11 @@ public class Main {
         return deltapesos;
     }
     
-     public static double[] deltaPesosBias(double[] erro){
+    // ARRAY ERRO PODE SER O ERRO DA CAMADA ESCONDIDA OU
+    // DA CAMADA DE ENTRADA
+    public static double[] deltaPesosBias(double[] erro){
         double[] dpbias = new double[3];
-        for(int i = 0; i < erro.length; i++){
+        for(int i = 0; i < dpbias.length; i++){
             dpbias[i] = TAXA_APRENDIZADO * erro[i];
         }
         return dpbias;
