@@ -12,8 +12,9 @@ import java.util.Random;
  */
 public class Main {
 
-    public static double taxa_aprendizado = 0.01;
-    public static int numero_epocas = 10;
+    /** Parametros da Rede Neural */
+    public static double TAXA_APRENDIZADO = 0.1;
+    public static int NUMERO_EPOCAS = 10;
 
     // taxa de aprendizado
     // numero de epocas
@@ -41,7 +42,7 @@ public class Main {
         float[] entrada = hogDescriptor();
         /* We need to insert bias equals 1 here in first element */
 
-        int[] camadaEntrada = {1, 4, 6, 8};
+        double[] camadaEntrada = {1, 4, 6, 8};
 
         double[][] pesos = randomPesos(camadaEntrada);
 
@@ -53,19 +54,19 @@ public class Main {
         //	| v02, v12, v22, v32 |
         //	| v03, v13, v23, v33 |
         //
-        int[][] pcamadaEntrada = { {2, 2, 2, 2}, {-4, -4, -4, -4}, {6, 6, 6, 6} };
-        int[][] pcamadaEscondida = { {3,3,3,3}, {5,5,5,5}, {7,7,7,7} };
+        double[][] pcamadaEntrada = { {2, 2, 2, 2}, {-4, -4, -4, -4}, {6, 6, 6, 6} };
+        double[][] pcamadaEscondida = { {3,3,3,3}, {5,5,5,5}, {7,7,7,7} };
 
-        int[] camadaEscondida = calcularSomatorio(camadaEntrada, pcamadaEntrada);
+        double[] camadaEscondida = calcularSomatorio(camadaEntrada, pcamadaEntrada);
 
         /* Camada de Saída possui index 0 com bias fixo. Consumir a partir do index 1. */
-        int[] camadaSaida = calcularSomatorio(camadaEscondida, pcamadaEscondida);
+        double[] camadaSaida = calcularSomatorio(camadaEscondida, pcamadaEscondida);
     }
 
     public static int[] calcularErro(int[] camadaEscondida, int valorEsperado, int[] camadaSaida) {
-        int[] erro = new int[camadaSaida.length-1];
-        for(int k=0; k<camdaSaida.length-1; k++){
-            erro[k]=((valorEsperado-camadaEscondida[k])*(camadaSaida[k]*(1-camadaSaida[k])));
+        int[] erro = new int[camadaSaida.length - 1];
+        for(int k = 0; k < camadaSaida.length - 1; k++){
+            erro[k] = ((valorEsperado - camadaEscondida[k]) * (camadaSaida[k] * (1 - camadaSaida[k])));
         }
         return erro;
     }
@@ -81,41 +82,44 @@ public class Main {
             }
             aux[i] = somatoria;
         }
-        for(int k=0; k<erro2.length; k++){
-            erro2[k] = aux[k]*(camadaEscondida[k]*(1-camadaEscondida[k]));
+        for(int k = 0; k < erro2.length; k++){
+            erro2[k] = aux[k] * (camadaEscondida[k] * (1 - camadaEscondida[k]));
         }
 
         return erro2;
     }
     
-    public static int[] deltaPesos(int ta, int[] erro, int[] camadaX){
-        int[][] deltapesos = new int[3][3];
-        for(int i=0; i<camadaX.length-1; i++){
-            for(int j=0; j<camadaX.length-1; j++){
-                deltapesos[i][j]=ta*erro[j]*camadaX[i];
+    public static double[][] deltaPesos(double[] erro, double[] camadaX){
+        double[][] deltapesos = new double[3][3];
+        for(int i = 0; i < camadaX.length - 1; i++){
+            for(int j = 0; j < camadaX.length - 1; j++){
+                deltapesos[i][j] = TAXA_APRENDIZADO * erro[j] * camadaX[i];
             }
         }
         return deltapesos;
     }
     
-     public static int[] deltaPesosBias(int ta, int[] erro){
-        int[] dpbias = new int[3];
-        for(int i=0; i<erro.length; i++){
-            dpbais[i]=ta*erro[j];
+     public static double[] deltaPesosBias(double[] erro){
+        double[] dpbias = new double[3];
+        for(int i = 0; i < erro.length; i++){
+            dpbias[i] = TAXA_APRENDIZADO * erro[i];
         }
         return dpbias;
     }
     
-    public static void atualizaPesos(int[][] pcamadaX, int[][] deltapeso, int[] dpbias){
-        for(int j=1; j<pcamadaX.length; j++){
-            for(k=0; k<pcamadaX[j].length; k++){
-                pcamadaX[j][k] = pcamadaX[j][k] + deltapeso[j][k];
+    public static double[][] atualizaPesos(double[][] pcamadaX, double[][] deltapeso, double[] dpbias){
+        double[][] novosPesos = new double[pcamadaX.length][pcamadaX[0].length];
+        for(int j = 1; j < pcamadaX.length; j++){
+            for(int k = 0; k < pcamadaX[j].length; k++){
+                novosPesos[j][k] = pcamadaX[j][k] + deltapeso[j][k];
             }
         }
         
-        for(int i=0; i<dpbias.length; i++){
-            pcamadaX[i][i]=pcamadaX[i][i]+dpbias[i];
+        for(int i = 0; i < dpbias.length; i++){
+            novosPesos[i][i] = pcamadaX[i][i] + dpbias[i];
         }
+
+        return novosPesos;
     }
 
 //    public static double[][] inicializacaoPesos(int[] fromCamada, int[] toCamada, int fromLayer, int toLayer) {
@@ -128,7 +132,7 @@ public class Main {
 //
 //    }
 
-    public static double[][] randomPesos(int[] camada) {
+    public static double[][] randomPesos(double[] camada) {
         Random r = new Random();
 
         double[][] pesos = new double[camada.length - 1][camada.length];
@@ -142,12 +146,13 @@ public class Main {
     }
 
     // Retorna um array com os valores dos somatorios para a camada seguinte
-    public static int[] calcularSomatorio(int[] camadaX, int[][] camadaPesos) {
+    public static double[] calcularSomatorio(double[] camadaX, double[][] camadaPesos) {
         // Variavel para guardar o valor da somatoria da entrada do neuronio * peso do neuronio
 
-        int[] novaCamada = new int[4];
+        double[] novaCamada = new double[camadaX.length + 1];
         // Setando o primeiro valor no vetor, que será o bias
         novaCamada[0] = 1;
+
         // Contador que auxiliará para setar os valores no array da camada escondida
         int aux = 1;
 
@@ -164,20 +169,14 @@ public class Main {
         return novaCamada;
     }
 
-    /*
-    public static int funcaoAtivacao(int sum) {
-        int LIMIAR = 10;
-        double fx = funcaoExponencial(sum);
 
-        return (fx >= LIMIAR) ? 1 : -1;
-    }*/
-
+    /* FUNCAO DE ATIVACAO */
     public static double funcaoExponencial(int sum) {
         return 1 / (1 + Math.exp(-sum));
     }
 
     /*public static double derivadaFuncaoExponencial(int sum) {
-        double fx = funcaoAtivacao(sum);
+        double fx = funcaoExponencial(sum);
 
         return fx * (1 - fx);
     }*/
