@@ -61,19 +61,33 @@ public class Main {
 
         /* Camada de Saída possui index 0 com bias fixo. Consumir a partir do index 1. */
         double[] camadaSaida = calcularSomatorio(camadaEscondida, pcamadaEscondida);
+
+        int[] valoresEsperadosCamadaSaida = { 1, 0, 0 };
+        testCalcularErro(valoresEsperadosCamadaSaida, camadaSaida, pcamadaEscondida, camadaEscondida);
     }
 
-    public static int[] calcularErro(int valorEsperado, int[] camadaSaida) {
-        int[] erro = new int[camadaSaida.length - 1];
+    public static void testCalcularErro(int[] valoresEsperados, double[] camadaSaida, double[][] pcamadaEscondida, double[] camadaEscondida ) {
+        /* TODO: Precisamos mudar esse metodo calcular erro pra ele receber
+                    um array de valores esperados e não apenas 1 valor esperado */
+        double[] erro = calcularErro(valoresEsperados[0], camadaSaida);
+        double[] erroFinal = calcularErroFinal(erro, camadaEscondida, pcamadaEscondida);
+
+        double[][] deltaPesos = deltaPesos(erroFinal, camadaEscondida);
+        double[] deltaBias = deltaPesosBias(erroFinal);
+        double[][] novosPesosCamadaEscondida = atualizaPesos(pcamadaEscondida, deltaPesos, deltaBias);
+    }
+
+    public static double[] calcularErro(int valorEsperado, double[] camadaSaida) {
+        double[] erro = new double[camadaSaida.length - 1];
         for(int k = 0; k < camadaSaida.length - 1; k++){
-            erro[k] = ((valorEsperado - camadaSaida[k]) * (camadaSaida[k] * (1 - camadaSaida[k])));
+            erro[k] = (valorEsperado - camadaSaida[k]) * derivadaFuncaoExponencial(camadaSaida[k]);
         }
         return erro;
     }
     
-    public static int[] calcularErroFinal(int[] erro, int[] camadaEscondida, int[][] pcamadaSaida) {
-        int[] aux = new int[3];
-        int[] erro2 = new int[3];
+    public static double[] calcularErroFinal(double[] erro, double[] camadaEscondida, double[][] pcamadaSaida) {
+        double[] aux = new double[3];
+        double[] erro2 = new double[3];
         // Parte da somatória para achar os valores de entrada da camada escondida
         for(int i = 0; i < pcamadaSaida.length; i++) {
             int somatoria = 0;
@@ -83,7 +97,7 @@ public class Main {
             aux[i] = somatoria;
         }
         for(int k = 0; k < erro2.length; k++){
-            erro2[k] = aux[k] * (camadaEscondida[k] * (1 - camadaEscondida[k]));
+            erro2[k] = aux[k] * derivadaFuncaoExponencial(camadaEscondida[k]);
         }
 
         return erro2;
@@ -126,16 +140,6 @@ public class Main {
 
         return novosPesos;
     }
-
-//    public static double[][] inicializacaoPesos(int[] fromCamada, int[] toCamada, int fromLayer, int toLayer) {
-//        int numberOfNeuronsInputLayer = fromCamada.length;
-//        int numberOfNeuronsCurrentLayer = toCamada.length;
-//
-//        double betaValue = 0.7d * Math.pow(numberOfNeuronsInputLayer, 1d / numberOfNeuronsCurrentLayer);
-//
-//
-//
-//    }
 
     public static double[][] randomPesos(double[] camada) {
         Random r = new Random();
@@ -180,11 +184,10 @@ public class Main {
         return 1 / (1 + Math.exp(-sum));
     }
 
-    /*public static double derivadaFuncaoExponencial(int sum) {
-        double fx = funcaoExponencial(sum);
-
+    // Fx = Resultado da Funcao Exponencial
+    public static double derivadaFuncaoExponencial(double fx) {
         return fx * (1 - fx);
-    }*/
+    }
 
     public static float[] hogDescriptor() {
 //        carrega uma img, o parametro é o caminho para a imagem
