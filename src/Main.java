@@ -20,6 +20,7 @@ public class Main {
             double[] entrada = ProjectHelper.readImage(images[i]);
             MLP rede = new MLP(entrada, esperados);
 
+            ProjectHelper.recordConfig();
             double[] resultado = rede.executarEpocas();
 
             System.out.println("TERMINOU IMAGEM: " + images[i]);

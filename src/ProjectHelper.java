@@ -5,6 +5,17 @@ import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
 import org.opencv.objdetect.HOGDescriptor;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
 /**
  * Created by gustavoromito on 5/1/17.
  */
@@ -83,10 +94,10 @@ public class ProjectHelper {
                 //nbins: sets the number of bins in the histogram of gradients. The authors of the HOG paper had
                 //recommended a value of 9 to capture gradients between 0 and 180 degrees in 20 degrees increments.
 
-                new Size(64, 64), //winSize
-                new Size(64, 64), //blocksize
-                new Size(64, 64), //blockStride
-                new Size(64, 64), //cellSize
+                new Size(16, 16), //winSize
+                new Size(16, 16), //blocksize
+                new Size(16, 16), //blockStride
+                new Size(16, 16), //cellSize
                 9 //nbins
         );
 
@@ -101,5 +112,22 @@ public class ProjectHelper {
         float a[] = floats.toArray();
 
         return a;
+    }
+
+    /**
+     * Config.txt
+     */
+    public static void recordConfig() {
+        List<String> lines = new ArrayList<>();
+        Path file = Paths.get("config.txt");
+
+        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
+        lines.add("Execucao em " + timeStamp);
+
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
