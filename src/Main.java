@@ -52,7 +52,7 @@ public class Main {
 
         String[] images = new String[10];
         for (int i = 0; i < images.length; i++) {
-            images[i] = "train_53_0100" + i + ".png";
+            images[i] = "train_58_0100" + i + ".png";
         }
 
         /* Camada de Saída possui index 0 com bias fixo. Consumir a partir do index 1. */
@@ -210,7 +210,7 @@ public class Main {
         int initial = (isCamadaSaida) ? 0 : 1;
         for(int i = initial; i < novaCamada.length; i++) {
             double somatoria = 0;
-            int index = Math.max(i - 1, 0);
+            int index = isCamadaSaida ? i : i - 1;
             for(int j = 0; j < camadaPesos[index].length; j++) {
                 somatoria += camadaX[j] * camadaPesos[index][j];
             }
