@@ -11,20 +11,33 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by gustavoromito on 5/1/17.
  */
 public class ProjectHelper {
 
+    public static final String Z_IMAGE_PREFFIX = "train_5a_";
+    public static final String S_IMAGE_PREFFIX = "train_53_";
+    public static final String X_IMAGE_PREFFIX = "train_58_";
+
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
+    /**
+     * Random number between two integers
+     */
+
+    public static int randomInt(int lowerBound, int upperBound) {
+        Random r = new Random();
+        return r.nextInt((upperBound - lowerBound) + 1) + lowerBound;
+    }
+
+    public static String paddingLeft(int number) {
+        return String.format("%05d", number);
+    }
     /**
      * Read Image From File
      */
@@ -39,13 +52,14 @@ public class ProjectHelper {
      * train_58_ = X
      */
     public static int[] valoresEsperadosForFileName(String filename) {
-        if (filename.contains("train_5a_")) {
+        if (filename.contains(Z_IMAGE_PREFFIX)) {
             return new int[]{ 1 , 0 , 0 };
-        } else if (filename.contains("train_53_")) {
+        } else if (filename.contains(S_IMAGE_PREFFIX)) {
             return new int[]{ 0 , 1 , 0 };
-        } else {
+        } else if (filename.contains(X_IMAGE_PREFFIX)) {
             return new int[]{ 0 , 0 , 1 };
         }
+        return new int[]{ 0 , 0 , 0 };
     }
 
     /**

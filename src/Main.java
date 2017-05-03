@@ -4,8 +4,16 @@
 public class Main {
 
     public static void main(String[] args) {
+        validateMLP();
+    }
 
-        /* We need to insert bias equals 1 here in first element */
+    /** K-Fold */
+    public static void validateMLP() {
+        KFold fold = new KFold();
+    }
+
+    public static void testMLP() {
+         /* We need to insert bias equals 1 here in first element */
 
         String[] images = new String[10];
         for (int i = 0; i < images.length; i++) {
@@ -26,7 +34,6 @@ public class Main {
             System.out.println("TERMINOU IMAGEM: " + images[i]);
         }
     }
-
 
 
 }
