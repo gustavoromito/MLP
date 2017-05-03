@@ -7,7 +7,7 @@ import java.util.List;
 public class KFold {
 
     private static final int NUMBER_OF_FOLDS = 5;
-    private static final int NUMBER_OF_IMAGES = 1000;
+    private static final int NUMBER_OF_IMAGES = 3000;
     private static final int TAMANHO_AMOSTRA = (int)(0.3 * NUMBER_OF_IMAGES);
     private static final int TAMANHO_AMOSTRA_CADA_LETRA = TAMANHO_AMOSTRA / 3;
 
