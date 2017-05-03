@@ -35,6 +35,9 @@ public class ProjectHelper {
         return r.nextInt((upperBound - lowerBound) + 1) + lowerBound;
     }
 
+    /**
+     * Converts number from '1' to '00001'
+     */
     public static String paddingLeft(int number) {
         return String.format("%05d", number);
     }

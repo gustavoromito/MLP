@@ -34,6 +34,9 @@ public class KFold {
         fold5 = initFold();
     }
 
+    /**
+     * This method is responsible for getting random images names for each letter
+     */
     private ArrayList<String> randomImagesWithPreffix(String preffix) {
 
         ArrayList<String> finalList = new ArrayList<>();
@@ -54,6 +57,10 @@ public class KFold {
         return finalList;
     }
 
+    /**
+     * This method is responsible for init each fold. It gets 20 random images
+     * from each Set: zImagesNames, sImagesNames and xImagesNames
+     */
     private ArrayList<String> initFold() {
 
         ArrayList<String> fold = new ArrayList<>();
@@ -66,6 +73,9 @@ public class KFold {
         return fold;
     }
 
+    /**
+     * This method gets 20 images random for the passed set
+     */
     private ArrayList<String> randomElementsFromSet(List<String> set) {
         int mustHaveLength = TAMANHO_AMOSTRA_CADA_LETRA / NUMBER_OF_FOLDS;
 
