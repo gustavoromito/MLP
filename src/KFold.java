@@ -85,6 +85,7 @@ public class KFold {
 
             int randomIndex = ProjectHelper.randomInt(0, set.size() - 1);
 
+            // Removing element from set avoids getting duplicated itens in any fold
             elements.add(set.remove(randomIndex));
         }
 
