@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by gustavoromito on 4/15/17.
  */
@@ -9,7 +12,12 @@ public class Main {
 
     /** K-Fold */
     public static void validateMLP() {
-        KFold fold = new KFold();
+        testKFold();
+    }
+
+    public static void testKFold() {
+        KFold kFold = new KFold();
+        kFold.validateMLP();
     }
 
     public static void testMLP() {
@@ -20,19 +28,25 @@ public class Main {
             images[i] = "train_58_0100" + i + ".png";
         }
 
+        MLP rede = new MLP();
+
         /* Camada de Saída possui index 0 com bias fixo. Consumir a partir do index 1. */
         for (int i = 0; i < images.length; i++) {
-            System.out.println("RODANDO IMAGEM: " + images[i]);
+            System.out.println("PROCESSANDO IMAGEM: " + images[i]);
 
             int[] esperados = ProjectHelper.valoresEsperadosForFileName(images[i]);
-            double[] entrada = ProjectHelper.readImage(images[i]);
-            MLP rede = new MLP(entrada, esperados);
+            double[] entrada = ProjectHelper.readImage(images[i], null);
 
-            ProjectHelper.recordConfig();
-            double[] resultado = rede.executarEpocas();
+            rede.addValorEsperado(esperados);
+            rede.addEntrada(entrada);
 
-            System.out.println("TERMINOU IMAGEM: " + images[i]);
+            System.out.println("TERMINOU PROCESSAMENTO IMAGEM: " + images[i]);
         }
+
+
+        ProjectHelper.recordConfig();
+        rede.learn();
+
     }
 
 

@@ -1,4 +1,6 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -6,21 +8,24 @@ import java.util.List;
  */
 public class KFold {
 
-    private static final int NUMBER_OF_FOLDS = 5;
+    public static final int NUMBER_OF_FOLDS = 5;
     private static final int NUMBER_OF_IMAGES = 3000;
+    private static final int NUMBER_OF_IMAGES_FOR_LETTER = 1000;
     private static final int TAMANHO_AMOSTRA = (int)(0.3 * NUMBER_OF_IMAGES);
     private static final int TAMANHO_AMOSTRA_CADA_LETRA = TAMANHO_AMOSTRA / 3;
 
-    private List<String> zImagesNames;
-    private List<String> sImagesNames;
-    private List<String> xImagesNames;
+    private ArrayList<String> zImagesNames;
+    private ArrayList<String> sImagesNames;
+    private ArrayList<String> xImagesNames;
 
     //FOLDS
-    private List<String> fold1;
-    private List<String> fold2;
-    private List<String> fold3;
-    private List<String> fold4;
-    private List<String> fold5;
+    private ArrayList<String> fold1;
+    private ArrayList<String> fold2;
+    private ArrayList<String> fold3;
+    private ArrayList<String> fold4;
+    private ArrayList<String> fold5;
+
+    public List<ArrayList<String>> folds;
 
     public KFold() {
         zImagesNames = randomImagesWithPreffix(ProjectHelper.Z_IMAGE_PREFFIX);
@@ -32,6 +37,17 @@ public class KFold {
         fold3 = initFold();
         fold4 = initFold();
         fold5 = initFold();
+        folds = new ArrayList<>();
+
+        folds.add(fold1);
+        folds.add(fold2);
+        folds.add(fold3);
+        folds.add(fold4);
+        folds.add(fold5);
+    }
+
+    public List<ArrayList<String>> getFolds() {
+        return folds;
     }
 
     /**
@@ -44,13 +60,13 @@ public class KFold {
 
         /** FinalList must hava size equal to Tamanho da Amosta */
         while (finalList.size() < TAMANHO_AMOSTRA_CADA_LETRA) {
-            int random = ProjectHelper.randomInt(0, NUMBER_OF_IMAGES - 1);
+            int random = ProjectHelper.randomInt(0, NUMBER_OF_IMAGES_FOR_LETTER - 1);
 
             /** Imagem já adicionada, pular para a próxima */
             if (alreadyUsedNumbers.contains(random))
                 continue;
 
-            String imageName = preffix + ProjectHelper.paddingLeft(random);
+            String imageName = preffix + ProjectHelper.paddingLeft(random) + ".png";
             finalList.add(imageName);
         }
 
@@ -90,5 +106,49 @@ public class KFold {
         }
 
         return elements;
+    }
+
+    /**
+     * Method responsible for validating our MLP
+     */
+
+    public void validateMLP() {
+        for(int i = 0; i < KFold.NUMBER_OF_FOLDS; i++) {
+            List<ArrayList<String>> foldsCopy = this.getFolds();
+
+            List<String> staticFold = foldsCopy.remove(i);
+
+            MLP rede = new MLP(1);
+
+            for(int j = 0; j < foldsCopy.size(); j++) {
+                ArrayList<String> fold = foldsCopy.get(j);
+
+                for(int y = 0; y < fold.size(); y++) {
+
+                    String imageName = fold.get(y);
+                    int[] esperados = ProjectHelper.valoresEsperadosForFileName(imageName);
+                    double[] entrada = ProjectHelper.readImage(imageName, "treinamento");
+
+                    rede.addValorEsperado(esperados);
+                    rede.addEntrada(entrada);
+                }
+
+            }
+
+            rede.learn();
+
+            ArrayList<double[]> entradas = new ArrayList<>();
+            ArrayList<int[]> esperados = new ArrayList<>();
+            for(int y = 0; y < staticFold.size(); y++) {
+                String imageName = staticFold.get(y);
+                int[] valoresEsperados = ProjectHelper.valoresEsperadosForFileName(imageName);
+                double[] entrada = ProjectHelper.readImage(imageName, "treinamento");
+                entradas.add(entrada);
+                esperados.add(valoresEsperados);
+            }
+
+            double[] erros = rede.validate(entradas, esperados);
+            System.out.println("Erros: " + erros.toString());
+        }
     }
 }

@@ -44,8 +44,8 @@ public class ProjectHelper {
     /**
      * Read Image From File
      */
-    public static double[] readImage(String imageName) {
-        float[] entrada = hogDescriptor(imageName);
+    public static double[] readImage(String imageName, String folderName) {
+        float[] entrada = hogDescriptor(imageName, folderName);
         return insertBiasToHog(entrada);
     }
 
@@ -87,11 +87,15 @@ public class ProjectHelper {
      * Responsible for read and return data from Image
      * Using Hog Descriptor
      */
-    private static float[] hogDescriptor(String filename) {
+    private static float[] hogDescriptor(String filename, String folderName) {
 //        carrega uma img, o parametro é o caminho para a imagem
-        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/testes/";
+        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
+        projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
+
+//        System.out.println("FOLDER NAME: " + projectAbsolutePath + filename);
         Mat img = Highgui.imread(projectAbsolutePath + filename);
 
+        int size = 32;
         //HOG
         HOGDescriptor hog = new HOGDescriptor(
                 //winSize: size of the digit images in our dataset
@@ -111,10 +115,10 @@ public class ProjectHelper {
                 //nbins: sets the number of bins in the histogram of gradients. The authors of the HOG paper had
                 //recommended a value of 9 to capture gradients between 0 and 180 degrees in 20 degrees increments.
 
-                new Size(16, 16), //winSize
-                new Size(16, 16), //blocksize
-                new Size(16, 16), //blockStride
-                new Size(16, 16), //cellSize
+                new Size(size, size), //winSize
+                new Size(size, size), //blocksize
+                new Size(size, size), //blockStride
+                new Size(size, size), //cellSize
                 9 //nbins
         );
 

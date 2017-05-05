@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -13,6 +15,9 @@ public class MLP {
     private FuncaoAtivacao mFin;
     private int[] mValoresEsperados;
 
+    private List<double[]> mEntradas = new ArrayList<>();
+    private List<int[]> mEntradasValoresEsperados = new ArrayList<>();
+
     // Camada Entrada
     private double[] mCamadaEntrada;
     private double[][] mPCamadaEntrada;
@@ -23,26 +28,41 @@ public class MLP {
 
     private double[] mCamadaSaida = new double[NUMERO_NEURONIOS_CAMADA_SAIDA];
 
-    // Inicializalicao da Rede Neural
-    public MLP(double[] entrada, int[] valoresEsperados) {
+    public MLP() {
         /** Default constructor with Number of Epocas and Learning Rate */
-        this(entrada, valoresEsperados, 10000, 0.5);
+        this(145);
     }
 
-    public MLP(double[] entrada, int[] valoresEsperados, int numberEpocas, double taxaAprendizado) {
+    // Inicializalicao da Rede Neural
+    public MLP(int tamanhoEntrada) {
+        this(1000, tamanhoEntrada);
+    }
+
+    // Inicializalicao da Rede Neural
+    public MLP(int numeroEpocas, int tamanhoEntrada) {
+        this(numeroEpocas, 0.5, tamanhoEntrada);
+    }
+
+    public MLP(int numberEpocas, double taxaAprendizado, int tamanhoEntrada) {
         mFin = new FuncaoAtivacao(FuncaoAtivacao.Type.Sigmoide);
 
-        // Inicializa Camada de Entrada
-        mCamadaEntrada = entrada;
-        mValoresEsperados = valoresEsperados;
+        mCamadaEntrada = new double[tamanhoEntrada];
         mPCamadaEntrada = randomPesos(mCamadaEntrada);
 
         // Inicializa Camada Escondida
-        mCamadaEscondida = calcularSomatorio(mCamadaEntrada, mPCamadaEntrada, false);
+        mCamadaEscondida = new double[tamanhoEntrada];
         mPCamadaEscondida = randomPesos(mCamadaEscondida);
 
         mNumeroEpocas = numberEpocas;
         mTaxaAprendizado = taxaAprendizado;
+    }
+
+    public void addEntrada(double[] entrada) {
+        mEntradas.add(entrada);
+    }
+
+    public void addValorEsperado(int[] valoresEsperados) {
+        mEntradasValoresEsperados.add(valoresEsperados);
     }
 
     private double[][] randomPesos(double[] camada) {
@@ -159,23 +179,86 @@ public class MLP {
     }
 
     /**
-     * Métodos responsáveis por executar a Rede Neural
+     * Validação da Rede Neural
      */
-    public double[] executarEpocas() {
-        int j = 0;
-        while (mTaxaAprendizado < 1 || j < mNumeroEpocas) {
-
-            executarEpoca();
-
-            mTaxaAprendizado += 0.001;
-            j++;
-        }
-        return mCamadaSaida;
+    public double[] validate(List<double[]> entradas, List<int[]> esperados) {
+        mEntradas = entradas;
+        mEntradasValoresEsperados = esperados;
+        return executeEpocas(false);
     }
 
-    private void executarEpoca() {
+
+    public double[] learn() {
+        return executeEpocas(true);
+    }
+
+    /**
+     * Métodos responsáveis por executar a Rede Neural
+     */
+    private double[] executeEpocas(boolean isLearning) {
+        int j = 0;
+
+        double[] errosMédios = new double[NUMERO_NEURONIOS_CAMADA_SAIDA];
+        while (j < mNumeroEpocas) {
+
+            System.out.println("EXECUTANDO ÉPOCA: " + j);
+            double[] errosDaEpoca = executarEpoca(isLearning);
+
+            for(int i = 0; i< errosDaEpoca.length; i++) {
+                errosMédios[i] += errosDaEpoca[i];
+            }
+
+            j++;
+        }
+
+        for(int i = 0; i < errosMédios.length; i++) {
+            errosMédios[i] = errosMédios[i] / mNumeroEpocas;
+        }
+
+        return errosMédios;
+    }
+
+    private double[] executarEpoca(boolean shouldLearn) {
+
+        double[] errosMédios = new double[NUMERO_NEURONIOS_CAMADA_SAIDA];
+
+        for (int i = 0; i < mEntradas.size(); i++) {
+            double[] entrada = mEntradas.get(i);
+            int[] esperados = mEntradasValoresEsperados.get(i);
+
+            mCamadaEntrada = entrada;
+            mValoresEsperados = esperados;
+
+            // Inicializa Camada de Entrada
+            mPCamadaEntrada = randomPesos(mCamadaEntrada);
+
+            // Inicializa Camada Escondida
+            mCamadaEscondida = calcularSomatorio(mCamadaEntrada, mPCamadaEntrada, false);
+            mPCamadaEscondida = randomPesos(mCamadaEscondida);
+
+            executarEntrada(shouldLearn);
+
+            for(int j = 0; j < errosMédios.length; j++) {
+                double resultado = mCamadaSaida[j];
+                double valorEsperado = mValoresEsperados[j];
+
+                errosMédios[j] += valorEsperado - resultado;
+            }
+
+        }
+
+        for(int j = 0; j < errosMédios.length; j++) {
+            errosMédios[j] = errosMédios[j] / mEntradas.size();
+        }
+
+        return errosMédios;
+
+    }
+
+    private void executarEntrada(boolean shouldLearn) {
         stepFeedForward();
-        stepBackPropagation();
+        if (shouldLearn)
+            stepBackPropagation();
     }
 
     private void stepFeedForward() {
