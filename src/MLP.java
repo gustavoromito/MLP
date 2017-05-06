@@ -24,6 +24,7 @@ public class MLP {
 
     // Camada Escondida
     private double[] mCamadaEscondida;
+
     private double[][] mPCamadaEscondida;
 
     private double[] mCamadaSaida = new double[NUMERO_NEURONIOS_CAMADA_SAIDA];
@@ -99,6 +100,14 @@ public class MLP {
         return mNumeroEpocas;
     }
 
+    public double[][] getPesosCamadaEntrada() {
+        return mPCamadaEntrada;
+    }
+
+    public double[][] getPesosCamadaEscondida() {
+        return mPCamadaEscondida;
+    }
+
     /**
      * Feed Forward
      */
@@ -135,7 +144,7 @@ public class MLP {
     private double[][] deltaPesos(double[] erro, double[] camadaX, int nextCamadaLength){
         double[][] deltapesos = new double[camadaX.length][nextCamadaLength];
         for(int i = 0; i < deltapesos.length; i++) {
-            for(int j = 1; j < erro.length; j++){
+            for(int j = 0; j < erro.length; j++){
                 deltapesos[i][j] = mTaxaAprendizado * erro[j] * camadaX[i];
             }
         }
@@ -182,11 +191,11 @@ public class MLP {
     /**
      * Atualização dos Pesos
      */
-    private static double[][] atualizaPesos(double[][] pcamadaX, double[][] deltapeso, double[] dpbias){
+    private static double[][] atualizaPesos(double[][] pcamadaX, double[][] deltapeso, double[] dpbias) {
         double[][] novosPesos = new double[pcamadaX.length][pcamadaX[0].length];
         for(int j = 0; j < pcamadaX.length; j++){
             for(int k = 1; k < deltapeso[j].length; k++){
-                novosPesos[j][k] = pcamadaX[j][k] + deltapeso[j][k];
+                novosPesos[j][k] = pcamadaX[j][k] + deltapeso[j][k - 1];
             }
         }
 
@@ -242,8 +251,6 @@ public class MLP {
             mCamadaEntrada = entrada;
             mValoresEsperados = esperados;
 
-            // Inicializa Camada Escondida
-            mCamadaEscondida = calcularSomatorio(mCamadaEntrada, mPCamadaEntrada, false);
             executarEntrada(shouldLearn);
 
             double erroDaImagem = 0.0;
@@ -279,7 +286,7 @@ public class MLP {
     private void stepBackPropagation() {
         //BACK PROPAGATION
         double[] erroSaida = calcularErro(mValoresEsperados, mCamadaSaida);
-        double[][] deltaPesosCamadaEscondida = deltaPesos(erroSaida, mCamadaEscondida, mCamadaSaida.length);
+        double[][] deltaPesosCamadaEscondida = deltaPesos(erroSaida, mCamadaEscondida, mCamadaSaida.length + 1);
         double[] deltaBiasCamadaEscondida = deltaPesosBias(erroSaida);
 
         double[] erroEntrada = calcularErroFinal(erroSaida, mCamadaEscondida, mPCamadaEscondida);

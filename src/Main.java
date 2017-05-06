@@ -51,6 +51,7 @@ public class Main {
         }
         ProjectHelper.recordErrorTxt(errors, "errorsTestes.txt");
         ProjectHelper.recordConfig(rede);
+        ProjectHelper.recordModel(rede);
     }
 
 

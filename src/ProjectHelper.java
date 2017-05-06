@@ -184,4 +184,40 @@ public class ProjectHelper {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Model.txt
+     */
+    public static void recordModel(MLP rede) {
+        List<String> lines = new ArrayList<>();
+        Path file = Paths.get("model.txt");
+
+        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
+        lines.add("Execucao em " + timeStamp + "\n");
+
+        lines.add(serializeMatrix(rede.getPesosCamadaEntrada()));
+        lines.add("\n");
+        lines.add(serializeMatrix(rede.getPesosCamadaEscondida()));
+
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String serializeMatrix(double[][] matrix) {
+
+        String line = "[";
+        for(int i = 0; i < matrix.length; i++) {
+            line += Arrays.toString(matrix[i]);
+
+            if (i != matrix.length - 1)
+                line += ", ";
+        }
+
+        line += "]";
+        return line;
+
+    }
 }
