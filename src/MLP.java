@@ -182,6 +182,8 @@ public class MLP {
 
         double[] erroFinal = new double[pcamadaSaida.length];
         for(int k = 0; k < erroFinal.length; k++){
+            // TODO: Como aux[0] é o Bias e inicialmente ele é 1.0
+            // Assim, mFin.derivate(camadaEscondida[k]) irá retornar zero, o que faz com que ele seja 0 pra sempre
             erroFinal[k] = aux[k] * mFin.derivate(camadaEscondida[k]);
         }
 
