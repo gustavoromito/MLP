@@ -155,10 +155,10 @@ public class KFold {
             errors.add(new AttemptError(i, errosAprendizado[0], errosValidacao[0]));
         }
 
-        ProjectHelper.recordErrorTxt(errors);
+        ProjectHelper.recordErrorTxt(errors, null);
     }
 
-    public class AttemptError {
+    public static class AttemptError {
 
         private int mEpoca;
         private double mErroTreinamento;

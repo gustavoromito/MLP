@@ -12,7 +12,8 @@ public class Main {
 
     /** K-Fold */
     public static void validateMLP() {
-        testKFold();
+//        testKFold();
+        testMLP();
     }
 
     public static void testKFold() {
@@ -43,10 +44,13 @@ public class Main {
             System.out.println("TERMINOU PROCESSAMENTO IMAGEM: " + images[i]);
         }
 
-
-        ProjectHelper.recordConfig();
-        rede.learn();
-
+        double[] learningErrors = rede.learn();
+        List<KFold.AttemptError> errors = new ArrayList<>();
+        for(int i = 0; i < learningErrors.length; i++) {
+            errors.add(new KFold.AttemptError(i, learningErrors[i], 999));
+        }
+        ProjectHelper.recordErrorTxt(errors, "errorsTestes.txt");
+        ProjectHelper.recordConfig(rede);
     }
 
 

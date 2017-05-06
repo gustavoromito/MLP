@@ -1,0 +1,12 @@
+Execucao em 05/05/2017 22:41
+
+extrator : HOG
+rede_alpha : 0.5
+rede_camada_1_neuronios : 145
+rede_camada_1_funcao_de_ativacao  : sigmoide
+rede_camada_2_neuronios : 3
+rede_camada_2_funcao_de_ativacao  : sigmoide
+rede_inicializacao_pesos  : aleatoria
+rede_min_epocas  : 1000
+rede_max_epocas  : 1000
+rede_parada_antecipada : deteccao da inflexao da curva de erro de validacao

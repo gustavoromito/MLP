@@ -138,12 +138,24 @@ public class ProjectHelper {
     /**
      * Config.txt
      */
-    public static void recordConfig() {
+    public static void recordConfig(MLP rede) {
         List<String> lines = new ArrayList<>();
         Path file = Paths.get("config.txt");
 
         String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
         lines.add("Execucao em " + timeStamp + "\n");
+
+        lines.add("extrator : " + "HOG");
+
+        lines.add("rede_alpha : " + rede.getTaxaAprendizado());
+        lines.add("rede_camada_1_neuronios : " + rede.getCamadaEscondida().length);
+        lines.add("rede_camada_1_funcao_de_ativacao  : " + "sigmoide");
+        lines.add("rede_camada_2_neuronios : " + rede.getCamadaSaida().length);
+        lines.add("rede_camada_2_funcao_de_ativacao  : " + "sigmoide");
+        lines.add("rede_inicializacao_pesos  : " + "aleatoria");
+        lines.add("rede_min_epocas  : " + rede.getNumeroEpocas());
+        lines.add("rede_max_epocas  : " + rede.getNumeroEpocas());
+        lines.add("rede_parada_antecipada : " + "deteccao da inflexao da curva de erro de validacao");
 
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
@@ -155,9 +167,9 @@ public class ProjectHelper {
     /**
      * Error.txt
      */
-    public static void recordErrorTxt(List<KFold.AttemptError> errors) {
+    public static void recordErrorTxt(List<KFold.AttemptError> errors, String filename) {
         List<String> lines = new ArrayList<>();
-        Path file = Paths.get("error.txt");
+        Path file = Paths.get(filename == null ? "error.txt" : filename);
 
         String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
         lines.add("Execucao em " + timeStamp + "\n");

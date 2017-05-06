@@ -81,6 +81,25 @@ public class MLP {
     // Fim da Inicialização
 
     /**
+     * Getters
+     */
+    public double getTaxaAprendizado() {
+        return mTaxaAprendizado;
+    }
+
+    public double[] getCamadaEscondida() {
+        return mCamadaEscondida;
+    }
+
+    public double[] getCamadaSaida() {
+        return mCamadaSaida;
+    }
+
+    public int getNumeroEpocas() {
+        return mNumeroEpocas;
+    }
+
+    /**
      * Feed Forward
      */
     // Retorna um array com os valores dos somatorios para a camada seguinte
@@ -274,5 +293,5 @@ public class MLP {
         mPCamadaEscondida = novosPesosCamadaEscondida;
         // END BACK PROPAGATION
     }
-    
+
 }
