@@ -143,7 +143,28 @@ public class ProjectHelper {
         Path file = Paths.get("config.txt");
 
         String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
-        lines.add("Execucao em " + timeStamp);
+        lines.add("Execucao em " + timeStamp + "\n");
+
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Error.txt
+     */
+    public static void recordErrorTxt(List<KFold.AttemptError> errors) {
+        List<String> lines = new ArrayList<>();
+        Path file = Paths.get("error.txt");
+
+        String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
+        lines.add("Execucao em " + timeStamp + "\n");
+
+        for (KFold.AttemptError error : errors) {
+            lines.add(error.getEpoca() + ";" + error.getErroTreinamento() + ";" + error.getErroValidacao());
+        }
 
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));

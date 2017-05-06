@@ -47,7 +47,7 @@ public class KFold {
     }
 
     public List<ArrayList<String>> getFolds() {
-        return folds;
+        return new ArrayList<>(folds);
     }
 
     /**
@@ -113,6 +113,9 @@ public class KFold {
      */
 
     public void validateMLP() {
+
+        List<AttemptError> errors = new ArrayList<>();
+
         for(int i = 0; i < KFold.NUMBER_OF_FOLDS; i++) {
             List<ArrayList<String>> foldsCopy = this.getFolds();
 
@@ -135,7 +138,7 @@ public class KFold {
 
             }
 
-            rede.learn();
+            double[] errosAprendizado = rede.learn();
 
             ArrayList<double[]> entradas = new ArrayList<>();
             ArrayList<int[]> esperados = new ArrayList<>();
@@ -147,8 +150,37 @@ public class KFold {
                 esperados.add(valoresEsperados);
             }
 
-            double[] erros = rede.validate(entradas, esperados);
-            System.out.println("Erros: " + erros.toString());
+            double[] errosValidacao = rede.validate(entradas, esperados);
+
+            errors.add(new AttemptError(i, errosAprendizado[0], errosValidacao[0]));
+        }
+
+        ProjectHelper.recordErrorTxt(errors);
+    }
+
+    public class AttemptError {
+
+        private int mEpoca;
+        private double mErroTreinamento;
+        private double mErroValidacao;
+
+        public AttemptError(int epoca, double erroTreinamento, double erroValidacao) {
+            mEpoca = epoca;
+            mErroTreinamento = erroTreinamento;
+            mErroValidacao = erroValidacao;
+        }
+
+        public int getEpoca() {
+            return mEpoca;
+        }
+
+        public double getErroTreinamento() {
+            return mErroTreinamento;
+        }
+
+        public double getErroValidacao() {
+            return mErroValidacao;
         }
     }
+
 }

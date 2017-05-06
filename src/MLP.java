@@ -30,12 +30,12 @@ public class MLP {
 
     public MLP() {
         /** Default constructor with Number of Epocas and Learning Rate */
-        this(145);
+        this(1000);
     }
 
     // Inicializalicao da Rede Neural
-    public MLP(int tamanhoEntrada) {
-        this(1000, tamanhoEntrada);
+    public MLP(int numeroEpocas) {
+        this(numeroEpocas, 145);
     }
 
     // Inicializalicao da Rede Neural
@@ -198,29 +198,23 @@ public class MLP {
     private double[] executeEpocas(boolean isLearning) {
         int j = 0;
 
-        double[] errosMédios = new double[NUMERO_NEURONIOS_CAMADA_SAIDA];
+        double[] errosEpocas = new double[mNumeroEpocas];
         while (j < mNumeroEpocas) {
 
             System.out.println("EXECUTANDO ÉPOCA: " + j);
-            double[] errosDaEpoca = executarEpoca(isLearning);
+            double erroDaEpoca = executarEpoca(isLearning);
+            errosEpocas[j] = erroDaEpoca;
 
-            for(int i = 0; i< errosDaEpoca.length; i++) {
-                errosMédios[i] += errosDaEpoca[i];
-            }
-
+            System.out.println("ERRO DA ÉPOCA " + j + ": " + erroDaEpoca);
             j++;
         }
 
-        for(int i = 0; i < errosMédios.length; i++) {
-            errosMédios[i] = errosMédios[i] / mNumeroEpocas;
-        }
-
-        return errosMédios;
+        return errosEpocas;
     }
 
-    private double[] executarEpoca(boolean shouldLearn) {
+    private double executarEpoca(boolean shouldLearn) {
 
-        double[] errosMédios = new double[NUMERO_NEURONIOS_CAMADA_SAIDA];
+        double erroMedio = 0.0;
 
         for (int i = 0; i < mEntradas.size(); i++) {
             double[] entrada = mEntradas.get(i);
@@ -229,29 +223,24 @@ public class MLP {
             mCamadaEntrada = entrada;
             mValoresEsperados = esperados;
 
-            // Inicializa Camada de Entrada
-            mPCamadaEntrada = randomPesos(mCamadaEntrada);
-
             // Inicializa Camada Escondida
             mCamadaEscondida = calcularSomatorio(mCamadaEntrada, mPCamadaEntrada, false);
-            mPCamadaEscondida = randomPesos(mCamadaEscondida);
-
             executarEntrada(shouldLearn);
 
-            for(int j = 0; j < errosMédios.length; j++) {
+            double erroDaImagem = 0.0;
+            for(int j = 0; j < NUMERO_NEURONIOS_CAMADA_SAIDA; j++) {
                 double resultado = mCamadaSaida[j];
                 double valorEsperado = mValoresEsperados[j];
 
-                errosMédios[j] += valorEsperado - resultado;
+                erroDaImagem += Math.pow(valorEsperado - resultado, 2);
             }
 
+            erroDaImagem = erroDaImagem * 0.5;
+            erroMedio += erroDaImagem;
         }
 
-        for(int j = 0; j < errosMédios.length; j++) {
-            errosMédios[j] = errosMédios[j] / mEntradas.size();
-        }
-
-        return errosMédios;
+        erroMedio = erroMedio / mEntradas.size();
+        return erroMedio;
 
     }
 
