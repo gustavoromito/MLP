@@ -12,13 +12,13 @@ public class Main {
 
     /** K-Fold */
     public static void validateMLP() {
-//        testKFold();
-        testMLP();
+        testKFold();
+//        testMLP();
     }
 
     public static void testKFold() {
         KFold kFold = new KFold();
-        kFold.validateMLP();
+        kFold.validateMLP(ProjectHelper.SIFT_EXTRACTOR);
     }
 
     public static void testMLP() {
@@ -36,7 +36,7 @@ public class Main {
             System.out.println("PROCESSANDO IMAGEM: " + images[i]);
 
             int[] esperados = ProjectHelper.valoresEsperadosForFileName(images[i]);
-            double[] entrada = ProjectHelper.readImage(images[i], null);
+            double[] entrada = ProjectHelper.readImage(images[i], null, ProjectHelper.SIFT_EXTRACTOR);
 
             rede.addValorEsperado(esperados);
             rede.addEntrada(entrada);

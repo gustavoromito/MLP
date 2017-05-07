@@ -112,7 +112,7 @@ public class KFold {
      * Method responsible for validating our MLP
      */
 
-    public void validateMLP() {
+    public void validateMLP(int descriptor) {
 
         List<AttemptError> errors = new ArrayList<>();
 
@@ -121,7 +121,13 @@ public class KFold {
 
             List<String> staticFold = foldsCopy.remove(i);
 
-            MLP rede = new MLP(1);
+            MLP rede;
+
+            if (descriptor == ProjectHelper.SIFT_EXTRACTOR) {
+                rede = new MLP(1, 2305);
+            } else {
+                rede = new MLP(1);
+            }
 
             for(int j = 0; j < foldsCopy.size(); j++) {
                 ArrayList<String> fold = foldsCopy.get(j);
@@ -130,7 +136,7 @@ public class KFold {
 
                     String imageName = fold.get(y);
                     int[] esperados = ProjectHelper.valoresEsperadosForFileName(imageName);
-                    double[] entrada = ProjectHelper.readImage(imageName, "treinamento");
+                    double[] entrada = ProjectHelper.readImage(imageName, "treinamento", descriptor);
 
                     rede.addValorEsperado(esperados);
                     rede.addEntrada(entrada);
@@ -145,7 +151,7 @@ public class KFold {
             for(int y = 0; y < staticFold.size(); y++) {
                 String imageName = staticFold.get(y);
                 int[] valoresEsperados = ProjectHelper.valoresEsperadosForFileName(imageName);
-                double[] entrada = ProjectHelper.readImage(imageName, "treinamento");
+                double[] entrada = ProjectHelper.readImage(imageName, "treinamento", descriptor);
                 entradas.add(entrada);
                 esperados.add(valoresEsperados);
             }

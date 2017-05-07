@@ -1,7 +1,7 @@
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.Size;
+import org.opencv.core.*;
+import org.opencv.features2d.DMatch;
+import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.FeatureDetector;
 import org.opencv.highgui.Highgui;
 import org.opencv.objdetect.HOGDescriptor;
 
@@ -26,6 +26,9 @@ public class ProjectHelper {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
+    public static final int HOG_EXTRACTOR = 0;
+    public static final int SIFT_EXTRACTOR = 1;
+
     /**
      * Random number between two integers
      */
@@ -33,6 +36,33 @@ public class ProjectHelper {
     public static int randomInt(int lowerBound, int upperBound) {
         Random r = new Random();
         return r.nextInt((upperBound - lowerBound) + 1) + lowerBound;
+    }
+
+    public static float[] SIFTExtractor(String filename, String folderName) {
+
+        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
+        projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
+
+//        System.out.println("FOLDER NAME: " + projectAbsolutePath + filename);
+        Mat img = Highgui.imread(projectAbsolutePath + filename);
+        FeatureDetector detector = FeatureDetector.create(FeatureDetector.SIFT);
+
+        MatOfKeyPoint keyPoints = new MatOfKeyPoint();
+        detector.detect(img, keyPoints);
+
+        DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
+        MatOfDMatch descriptors = new MatOfDMatch();
+        extractor.compute(img, keyPoints, descriptors);
+        descriptors.channels();
+        descriptors.depth();
+
+        DMatch[] f = descriptors.toArray();
+
+        int size = (int)descriptors.total() * descriptors.channels();
+        float[] a = new float[size];
+        descriptors.get(0, 0, a);
+
+        return a;
     }
 
     /**
@@ -44,8 +74,13 @@ public class ProjectHelper {
     /**
      * Read Image From File
      */
-    public static double[] readImage(String imageName, String folderName) {
-        float[] entrada = hogDescriptor(imageName, folderName);
+    public static double[] readImage(String imageName, String folderName, int extractor) {
+        float[] entrada;
+
+        if (extractor == SIFT_EXTRACTOR)
+            entrada = SIFTExtractor(imageName, folderName);
+        else
+            entrada = hogDescriptor(imageName, folderName);
         return insertBiasToHog(entrada);
     }
 

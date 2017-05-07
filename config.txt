@@ -1,4 +1,4 @@
-Execucao em 06/05/2017 17:28
+Execucao em 06/05/2017 17:32
 
 extrator : HOG
 rede_alpha : 0.5
