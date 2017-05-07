@@ -12,23 +12,24 @@ public class Main {
 
     /** K-Fold */
     public static void validateMLP() {
-        testMLP();
-        testKFold();
+        testMLP(ProjectHelper.HOG_EXTRACTOR);
+        testKFold(ProjectHelper.HOG_EXTRACTOR);
     }
 
-    public static void testKFold() {
+    public static void testKFold(int extractor) {
         System.out.println("--------- RODANDO KFOLD --------");
         KFold kFold = new KFold();
-        kFold.validateMLP(ProjectHelper.HOG_EXTRACTOR);
+        kFold.validateMLP(extractor);
         System.out.println("--------- TÉRMINO DO KFOLD --------");
     }
 
-    public static void testMLP() {
+    public static void testMLP(int extractor) {
         System.out.println("--------- RODANDO TREINAMENTO DA REDE NEURAL --------");
 
         List<String> images = ProjectHelper.sourceImages();
 
-        MLP rede = new MLP();
+        int n = extractor == ProjectHelper.SIFT_EXTRACTOR ? ProjectHelper.SIFT_ENTRY_SIZE : ProjectHelper.HOG_ENTRY_SIZE;
+        MLP rede = new MLP(n);
 
         /* Camada de Saída possui index 0 com bias fixo. Consumir a partir do index 1. */
         for (int i = 0; i < images.size(); i++) {
@@ -36,7 +37,7 @@ public class Main {
             System.out.println("PROCESSANDO IMAGEM: " + image);
 
             int[] esperados = ProjectHelper.valoresEsperadosForFileName(image);
-            double[] entrada = ProjectHelper.readImage(images.get(i), null, ProjectHelper.HOG_EXTRACTOR);
+            double[] entrada = ProjectHelper.readImage(images.get(i), null, extractor);
 
             rede.addValorEsperado(esperados);
             rede.addEntrada(entrada);
@@ -50,7 +51,7 @@ public class Main {
             errors.add(new KFold.AttemptError(i, learningErrors[i], 999));
         }
         ProjectHelper.recordErrorTxt(errors, "errorsTestes.txt");
-        ProjectHelper.recordConfig(rede);
+        ProjectHelper.recordConfig(rede, extractor);
         ProjectHelper.recordModel(rede);
 
         System.out.println("--------- FIM DO TREINAMENTO DA REDE NEURAL --------");

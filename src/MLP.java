@@ -11,7 +11,7 @@ public class MLP {
 
     public double mTaxaAprendizadoInicial;
     private double mTaxaAprendizado;
-    public int mNumeroMinEpocas = 100;
+    public int mNumeroMinEpocas = 200;
     private int mNumeroEpocas;
 
     public String earlier_stopped = "nenhuma";
@@ -36,13 +36,13 @@ public class MLP {
     private double[] mCamadaSaida = new double[NUMERO_NEURONIOS_CAMADA_SAIDA];
 
     public MLP() {
-        /** Default constructor with Number of Epocas and Learning Rate */
-        this(500);
+        /** Default constructor with Tamanho Entrada */
+        this(145);
     }
 
     // Inicializalicao da Rede Neural
-    public MLP(int numeroEpocas) {
-        this(numeroEpocas, 145);
+    public MLP(int tamanhoEntrada) {
+        this(500, tamanhoEntrada);
     }
 
     // Inicializalicao da Rede Neural

@@ -34,6 +34,11 @@ public class ProjectHelper {
     public static final int HOG_EXTRACTOR = 0;
     public static final int SIFT_EXTRACTOR = 1;
 
+    private static final int MAX_KEYPOINTS = 4;
+
+    public static final int SIFT_ENTRY_SIZE = MAX_KEYPOINTS * 128 + 1;
+    public static final int HOG_ENTRY_SIZE = 145;
+
     /**
      * Random number between two integers
      */
@@ -63,9 +68,14 @@ public class ProjectHelper {
 
         DMatch[] f = descriptors.toArray();
 
-        int size = (int)descriptors.total() * descriptors.channels();
-        float[] a = new float[size];
-        descriptors.get(0, 0, a);
+        int rows = Math.min(MAX_KEYPOINTS, descriptors.rows());
+        int cols = descriptors.cols();
+        float[] a = new float[rows * cols];
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                a[i * j] = (float)descriptors.get(i, j)[0];
+            }
+        }
 
         return a;
     }
@@ -177,14 +187,14 @@ public class ProjectHelper {
     /**
      * Config.txt
      */
-    public static void recordConfig(MLP rede) {
+    public static void recordConfig(MLP rede, int extractorType) {
         List<String> lines = new ArrayList<>();
         Path file = Paths.get("config.txt");
 
         String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Calendar.getInstance().getTime());
         lines.add("Execucao em " + timeStamp + "\n");
 
-        lines.add("extrator : " + "HOG");
+        lines.add("extrator : " + ((extractorType == SIFT_EXTRACTOR) ? "SIFT" : "HOG"));
         lines.add("extrator_orientacoes : 9");
         lines.add("extrator_pixel_por_celula : " + mWinSize / mCellSize);
         lines.add("extrator_celula_por_bloco : " + mWinSize / mBlockSize);
