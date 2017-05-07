@@ -9,8 +9,14 @@ public class MLP {
 
     private static final int NUMERO_NEURONIOS_CAMADA_SAIDA = 3;
 
+    public double mTaxaAprendizadoInicial;
     private double mTaxaAprendizado;
+    public int mNumeroMinEpocas = 100;
     private int mNumeroEpocas;
+
+    public String earlier_stopped = "nenhuma";
+
+    public int STOP_WINDOWS = 5;
 
     private FuncaoAtivacao mFin;
     private int[] mValoresEsperados;
@@ -31,7 +37,7 @@ public class MLP {
 
     public MLP() {
         /** Default constructor with Number of Epocas and Learning Rate */
-        this(1000);
+        this(500);
     }
 
     // Inicializalicao da Rede Neural
@@ -41,7 +47,7 @@ public class MLP {
 
     // Inicializalicao da Rede Neural
     public MLP(int numeroEpocas, int tamanhoEntrada) {
-        this(numeroEpocas, 0.5, tamanhoEntrada);
+        this(numeroEpocas, 0.01, tamanhoEntrada);
     }
 
     public MLP(int numberEpocas, double taxaAprendizado, int tamanhoEntrada) {
@@ -56,6 +62,7 @@ public class MLP {
 
         mNumeroEpocas = numberEpocas;
         mTaxaAprendizado = taxaAprendizado;
+        mTaxaAprendizadoInicial = taxaAprendizado;
     }
 
     public void addEntrada(double[] entrada) {
@@ -227,6 +234,7 @@ public class MLP {
         int j = 0;
 
         double[] errosEpocas = new double[mNumeroEpocas];
+        int increasedErrorCount = 0;
         while (j < mNumeroEpocas) {
 
             System.out.println("EXECUTANDO ÉPOCA: " + j);
@@ -234,6 +242,23 @@ public class MLP {
             errosEpocas[j] = erroDaEpoca;
 
             System.out.println("ERRO DA ÉPOCA " + j + ": " + erroDaEpoca);
+            mTaxaAprendizado = Math.min(0.999, mTaxaAprendizado + 1.0 / mNumeroEpocas);
+
+            if (j >= mNumeroMinEpocas) {
+                // Validate Inflexao do Erro
+                if (errosEpocas[j] > errosEpocas[j - 1]) {
+                    increasedErrorCount++;
+                    if (increasedErrorCount == STOP_WINDOWS) {
+                        earlier_stopped = "deteccao da inflexao da curva de erro de validacao";
+                        break;
+                    }
+                } else {
+                    increasedErrorCount = 0;
+                }
+
+            }
+
+
             j++;
         }
 

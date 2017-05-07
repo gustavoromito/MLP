@@ -12,36 +12,36 @@ public class Main {
 
     /** K-Fold */
     public static void validateMLP() {
+        testMLP();
         testKFold();
-//        testMLP();
     }
 
     public static void testKFold() {
+        System.out.println("--------- RODANDO KFOLD --------");
         KFold kFold = new KFold();
-        kFold.validateMLP(ProjectHelper.SIFT_EXTRACTOR);
+        kFold.validateMLP(ProjectHelper.HOG_EXTRACTOR);
+        System.out.println("--------- TÉRMINO DO KFOLD --------");
     }
 
     public static void testMLP() {
-         /* We need to insert bias equals 1 here in first element */
+        System.out.println("--------- RODANDO TREINAMENTO DA REDE NEURAL --------");
 
-        String[] images = new String[10];
-        for (int i = 0; i < images.length; i++) {
-            images[i] = "train_58_0100" + i + ".png";
-        }
+        List<String> images = ProjectHelper.sourceImages();
 
         MLP rede = new MLP();
 
         /* Camada de Saída possui index 0 com bias fixo. Consumir a partir do index 1. */
-        for (int i = 0; i < images.length; i++) {
-            System.out.println("PROCESSANDO IMAGEM: " + images[i]);
+        for (int i = 0; i < images.size(); i++) {
+            String image = images.get(i);
+            System.out.println("PROCESSANDO IMAGEM: " + image);
 
-            int[] esperados = ProjectHelper.valoresEsperadosForFileName(images[i]);
-            double[] entrada = ProjectHelper.readImage(images[i], null, ProjectHelper.SIFT_EXTRACTOR);
+            int[] esperados = ProjectHelper.valoresEsperadosForFileName(image);
+            double[] entrada = ProjectHelper.readImage(images.get(i), null, ProjectHelper.HOG_EXTRACTOR);
 
             rede.addValorEsperado(esperados);
             rede.addEntrada(entrada);
 
-            System.out.println("TERMINOU PROCESSAMENTO IMAGEM: " + images[i]);
+            System.out.println("TERMINOU PROCESSAMENTO IMAGEM: " + image);
         }
 
         double[] learningErrors = rede.learn();
@@ -52,6 +52,8 @@ public class Main {
         ProjectHelper.recordErrorTxt(errors, "errorsTestes.txt");
         ProjectHelper.recordConfig(rede);
         ProjectHelper.recordModel(rede);
+
+        System.out.println("--------- FIM DO TREINAMENTO DA REDE NEURAL --------");
     }
 
 

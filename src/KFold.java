@@ -66,7 +66,7 @@ public class KFold {
             if (alreadyUsedNumbers.contains(random))
                 continue;
 
-            String imageName = preffix + ProjectHelper.paddingLeft(random) + ".png";
+            String imageName = preffix + ProjectHelper.paddingLeft(random, 5) + ".png";
             finalList.add(imageName);
         }
 

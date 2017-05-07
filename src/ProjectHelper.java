@@ -22,6 +22,11 @@ public class ProjectHelper {
     public static final String S_IMAGE_PREFFIX = "train_53_";
     public static final String X_IMAGE_PREFFIX = "train_58_";
 
+    public static final int mWinSize = 32;
+    public static final int mBlockSize = 32;
+    public static final int mBlockStride = 32;
+    public static final int mCellSize = 32;
+
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
@@ -68,8 +73,8 @@ public class ProjectHelper {
     /**
      * Converts number from '1' to '00001'
      */
-    public static String paddingLeft(int number) {
-        return String.format("%05d", number);
+    public static String paddingLeft(int number, int size) {
+        return String.format("%0"+ size + "d", number);
     }
     /**
      * Read Image From File
@@ -130,7 +135,6 @@ public class ProjectHelper {
 //        System.out.println("FOLDER NAME: " + projectAbsolutePath + filename);
         Mat img = Highgui.imread(projectAbsolutePath + filename);
 
-        int size = 32;
         //HOG
         HOGDescriptor hog = new HOGDescriptor(
                 //winSize: size of the digit images in our dataset
@@ -150,10 +154,10 @@ public class ProjectHelper {
                 //nbins: sets the number of bins in the histogram of gradients. The authors of the HOG paper had
                 //recommended a value of 9 to capture gradients between 0 and 180 degrees in 20 degrees increments.
 
-                new Size(size, size), //winSize
-                new Size(size, size), //blocksize
-                new Size(size, size), //blockStride
-                new Size(size, size), //cellSize
+                new Size(mWinSize, mWinSize), //winSize
+                new Size(mBlockSize, mBlockSize), //blocksize
+                new Size(mBlockStride, mBlockStride), //blockStride
+                new Size(mCellSize, mCellSize), //cellSize
                 9 //nbins
         );
 
@@ -181,16 +185,20 @@ public class ProjectHelper {
         lines.add("Execucao em " + timeStamp + "\n");
 
         lines.add("extrator : " + "HOG");
+        lines.add("extrator_orientacoes : 9");
+        lines.add("extrator_pixel_por_celula : " + mWinSize / mCellSize);
+        lines.add("extrator_celula_por_bloco : " + mWinSize / mBlockSize);
 
-        lines.add("rede_alpha : " + rede.getTaxaAprendizado());
+        lines.add("rede_alpha_inicial : " + rede.mTaxaAprendizadoInicial);
+        lines.add("rede_alpha_final : " + rede.getTaxaAprendizado());
         lines.add("rede_camada_1_neuronios : " + rede.getCamadaEscondida().length);
         lines.add("rede_camada_1_funcao_de_ativacao  : " + "sigmoide");
         lines.add("rede_camada_2_neuronios : " + rede.getCamadaSaida().length);
         lines.add("rede_camada_2_funcao_de_ativacao  : " + "sigmoide");
         lines.add("rede_inicializacao_pesos  : " + "aleatoria");
-        lines.add("rede_min_epocas  : " + rede.getNumeroEpocas());
+        lines.add("rede_min_epocas  : " + rede.mNumeroMinEpocas);
         lines.add("rede_max_epocas  : " + rede.getNumeroEpocas());
-        lines.add("rede_parada_antecipada : " + "deteccao da inflexao da curva de erro de validacao");
+        lines.add("rede_parada_antecipada : " + rede.earlier_stopped);
 
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
@@ -255,4 +263,25 @@ public class ProjectHelper {
         return line;
 
     }
+
+    public static List<String> sourceImages() {
+        ArrayList<String> images = new ArrayList<>();
+        images.addAll(Arrays.asList(imagesForPreffix(Z_IMAGE_PREFFIX)));
+        images.addAll(Arrays.asList(imagesForPreffix(S_IMAGE_PREFFIX)));
+        images.addAll(Arrays.asList(imagesForPreffix(X_IMAGE_PREFFIX)));
+
+        return images;
+    }
+
+    private static String[] imagesForPreffix(String preffix) {
+        String[] images = new String[300];
+        for (int i = 0; i < images.length; i++) {
+            String id = paddingLeft(i, 3);
+            images[i] = preffix + "01" + id + ".png";
+        }
+
+        return images;
+    }
+
+
 }
