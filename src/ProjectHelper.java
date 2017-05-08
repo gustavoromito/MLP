@@ -60,10 +60,12 @@ public class ProjectHelper {
     public static double[] readImage(String imageName, String folderName, int extractor) {
         float[] entrada;
 
+        Mat img = getImageNamed(imageName, folderName);
+
         if (extractor == SIFT_EXTRACTOR)
-            entrada = SIFTExtractor(imageName, folderName);
+            entrada = SIFTExtractor(img);
         else
-            entrada = hogDescriptor(imageName, folderName);
+            entrada = hogDescriptor(img);
         return insertBiasToHog(entrada);
     }
 
@@ -101,17 +103,20 @@ public class ProjectHelper {
         return output;
     }
 
+    private static Mat getImageNamed(String filename, String folderName) {
+        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
+        projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
+
+        Mat img = Highgui.imread(projectAbsolutePath + filename);
+        return img;
+    }
+
     /**
      * Responsible for read and return data from Image
      * Using SIFT Descriptor
      */
-    private static float[] SIFTExtractor(String filename, String folderName) {
+    private static float[] SIFTExtractor(Mat img) {
 
-        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
-        projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
-
-//        System.out.println("FOLDER NAME: " + projectAbsolutePath + filename);
-        Mat img = Highgui.imread(projectAbsolutePath + filename);
         FeatureDetector detector = FeatureDetector.create(FeatureDetector.SIFT);
 
         MatOfKeyPoint keyPoints = new MatOfKeyPoint();
@@ -122,8 +127,6 @@ public class ProjectHelper {
         extractor.compute(img, keyPoints, descriptors);
         descriptors.channels();
         descriptors.depth();
-
-        DMatch[] f = descriptors.toArray();
 
         int rows = Math.min(MAX_KEYPOINTS, descriptors.rows());
         int cols = descriptors.cols();
@@ -141,14 +144,7 @@ public class ProjectHelper {
      * Responsible for read and return data from Image
      * Using Hog Descriptor
      */
-    private static float[] hogDescriptor(String filename, String folderName) {
-//        carrega uma img, o parametro é o caminho para a imagem
-        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
-        projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
-
-//        System.out.println("FOLDER NAME: " + projectAbsolutePath + filename);
-        Mat img = Highgui.imread(projectAbsolutePath + filename);
-
+    private static float[] hogDescriptor(Mat img) {
         //HOG
         HOGDescriptor hog = new HOGDescriptor(
                 //winSize: size of the digit images in our dataset
