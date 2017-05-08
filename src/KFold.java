@@ -122,7 +122,7 @@ public class KFold {
             List<String> staticFold = foldsCopy.remove(i);
 
             int n = descriptor == ProjectHelper.SIFT_EXTRACTOR ? ProjectHelper.SIFT_ENTRY_SIZE : ProjectHelper.HOG_ENTRY_SIZE;
-            MLP rede = rede = new MLP(1, n);
+            MLP rede = new MLP(1, n);
 
             for(int j = 0; j < foldsCopy.size(); j++) {
                 ArrayList<String> fold = foldsCopy.get(j);
