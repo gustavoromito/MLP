@@ -48,38 +48,6 @@ public class ProjectHelper {
         return r.nextInt((upperBound - lowerBound) + 1) + lowerBound;
     }
 
-    public static float[] SIFTExtractor(String filename, String folderName) {
-
-        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
-        projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
-
-//        System.out.println("FOLDER NAME: " + projectAbsolutePath + filename);
-        Mat img = Highgui.imread(projectAbsolutePath + filename);
-        FeatureDetector detector = FeatureDetector.create(FeatureDetector.SIFT);
-
-        MatOfKeyPoint keyPoints = new MatOfKeyPoint();
-        detector.detect(img, keyPoints);
-
-        DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
-        MatOfDMatch descriptors = new MatOfDMatch();
-        extractor.compute(img, keyPoints, descriptors);
-        descriptors.channels();
-        descriptors.depth();
-
-        DMatch[] f = descriptors.toArray();
-
-        int rows = Math.min(MAX_KEYPOINTS, descriptors.rows());
-        int cols = descriptors.cols();
-        float[] a = new float[rows * cols];
-        for(int i = 0; i < rows; i++) {
-            for(int j = 0; j < cols; j++) {
-                a[i * j] = (float)descriptors.get(i, j)[0];
-            }
-        }
-
-        return a;
-    }
-
     /**
      * Converts number from '1' to '00001'
      */
@@ -131,6 +99,42 @@ public class ProjectHelper {
             output[i] = input[i - 1];
         }
         return output;
+    }
+
+    /**
+     * Responsible for read and return data from Image
+     * Using SIFT Descriptor
+     */
+    private static float[] SIFTExtractor(String filename, String folderName) {
+
+        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
+        projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
+
+//        System.out.println("FOLDER NAME: " + projectAbsolutePath + filename);
+        Mat img = Highgui.imread(projectAbsolutePath + filename);
+        FeatureDetector detector = FeatureDetector.create(FeatureDetector.SIFT);
+
+        MatOfKeyPoint keyPoints = new MatOfKeyPoint();
+        detector.detect(img, keyPoints);
+
+        DescriptorExtractor extractor = DescriptorExtractor.create(DescriptorExtractor.SIFT);
+        MatOfDMatch descriptors = new MatOfDMatch();
+        extractor.compute(img, keyPoints, descriptors);
+        descriptors.channels();
+        descriptors.depth();
+
+        DMatch[] f = descriptors.toArray();
+
+        int rows = Math.min(MAX_KEYPOINTS, descriptors.rows());
+        int cols = descriptors.cols();
+        float[] a = new float[rows * cols];
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                a[i * j] = (float)descriptors.get(i, j)[0];
+            }
+        }
+
+        return a;
     }
 
     /**
