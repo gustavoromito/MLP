@@ -103,7 +103,7 @@ public class ProjectHelper {
     }
 
     private static Mat getImageNamed(String filename, String folderName) {
-        String projectAbsolutePath = "/Users/gustavoromito/Companies/USP Faculdade/IA/dataset1/";
+        String projectAbsolutePath = "/Users/gustavoromito/Documents/Faculdade/IA/dataset2/";
         projectAbsolutePath += (folderName == null) ? "testes/" : (folderName + "/");
 
         Mat img = Highgui.imread(projectAbsolutePath + filename);

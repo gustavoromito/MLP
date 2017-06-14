@@ -7,7 +7,7 @@ import java.util.Random;
  */
 public class MLP {
 
-    private static final int NUMERO_NEURONIOS_CAMADA_SAIDA = Letters.getAllPreffix();
+    private static final int NUMERO_NEURONIOS_CAMADA_SAIDA = Letters.getAllPreffix().length;
 
     public double mTaxaAprendizadoInicial;
     private double mTaxaAprendizado;
