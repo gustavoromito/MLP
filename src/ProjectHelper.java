@@ -69,20 +69,19 @@ public class ProjectHelper {
         return insertBiasToHog(entrada);
     }
 
-    /**
-     * train_5a_ = Z
-     * train_53_ = S
-     * train_58_ = X
-     */
     public static int[] valoresEsperadosForFileName(String filename) {
-        if (filename.contains(Z_IMAGE_PREFFIX)) {
-            return new int[]{ 1 , 0 , 0 };
-        } else if (filename.contains(S_IMAGE_PREFFIX)) {
-            return new int[]{ 0 , 1 , 0 };
-        } else if (filename.contains(X_IMAGE_PREFFIX)) {
-            return new int[]{ 0 , 0 , 1 };
+        String[] letters = Letters.getAllPreffix();
+        int[] valoresEsperados = new int[letters.length]; // 26 letters
+
+        for (int i = 0; i < letters.length; i++) {
+            String preffix = letters[i];
+            if (filename.contains(preffix)) {
+                valoresEsperados[i] = 1;
+                break;
+            }            
         }
-        return new int[]{ 0 , 0 , 0 };
+
+        return valoresEsperados;
     }
 
     /**
